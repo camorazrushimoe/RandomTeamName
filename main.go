@@ -5,11 +5,14 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/shogo82148/go-shuffle"
+	"log"
+	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-func main() {
-
+// GetTeamName function bla
+func GetTeamName(w http.ResponseWriter, r *http.Request) {
 	now := time.Now()
 	secs := now.Unix()
 
@@ -17,9 +20,13 @@ func main() {
 	firstWord := []string{"Веселые", "Грустные", "Несчастные", "Бодрые", "Смешные", "Известные", "Плавные"}
 	secondWord := []string{"Непоседы", "Бунтари", "Агностики", "Умники", "Клерики"}
 
-	shuffle.Strings(firstWord)
-	shuffle.Strings(secondWord)
+	teamName := firstWord[rand.Intn(len(firstWord))] + " " + secondWord[rand.Intn(len(secondWord))]
 
-	fmt.Println("Team name:", firstWord[rand.Intn(len(firstWord))], secondWord[rand.Intn(len(secondWord))])
+	fmt.Fprintf(w, teamName)
+}
 
+func main() {
+	router := mux.NewRouter()
+	router.HandleFunc("/", GetTeamName).Methods("GET")
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
